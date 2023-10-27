@@ -1,4 +1,4 @@
-package protocgengogormenum
+package main
 
 import (
 	"fmt"
@@ -6,8 +6,20 @@ import (
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
-// GenerateEnumFile generates a __gorm_enum.pb.go file containing enum gorm definitions.
-func GenerateEnumFile(gen *protogen.Plugin, file *protogen.File) *protogen.GeneratedFile {
+func main() {
+	protogen.Options{}.Run(func(gen *protogen.Plugin) error {
+		for _, f := range gen.Files {
+			if !f.Generate {
+				continue
+			}
+			generateFile(gen, f)
+		}
+		return nil
+	})
+}
+
+// generateFile generates a _enum.pb.go file containing enum gorm definitions.
+func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.GeneratedFile {
 	hasEnum := false
 	if len(file.Enums) != 0 {
 		hasEnum = true
